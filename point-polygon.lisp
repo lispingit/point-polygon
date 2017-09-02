@@ -38,6 +38,14 @@
                       ((> (car proj) (car p)) 2)
                       (t -2)))))))
 
+(defun abscissa-projection (p v1 v2)
+  "Return the abscissa projecion of point p into segment with vertex v1 and v2."
+  (list (+ (car v1)
+           (/ (* (- (car v2) (car v1))
+                 (- (cadr p) (cadr v1)))
+              (- (cadr v2) (cadr v1))))
+        (cadr p)))
+
 (defun pair-eq (x y) 
   "Tells if first and second element of lists x and y are arithmetically equal."
   (and (= (car x) (car y)) (= (cadr x) (cadr y))))
