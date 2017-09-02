@@ -8,7 +8,7 @@
   "Tell if point p is inside or in the border of polygon.
   p is expected to be a list of two values, the coodinate pair, while polygon is a list of coordinate pairs
   such that the first element is pairwise equal to the last element."
-  (is-inside-rec p polygon 0 nil))
+  (is-inside-or-border-rec p polygon 0 nil))
 
 (defun is-inside-or-border-rec (p polygon quadrant-inc last-point)
   (if (null polygon)
@@ -21,8 +21,8 @@
 (defun calculate-inc (p last-point next-point)
   "Calculate the integer counterclockwise movement in quadrants from last-point to next-point.
    Returns NIL if p is on the border of the segment with last-point and next-point as vertex."
-  (let ((last-quadrant (quadrant x last-point))
-        (next-quadrant (quadrant x next-point)))
+  (let ((last-quadrant (quadrant p last-point))
+        (next-quadrant (quadrant p next-point)))
     (cond ((or (pair-eq p last-point) (pair-eq p next-point)) nil)
           ((eq last-quadrant next-quadrant) 0)
           ((and (eq last-quadrant :q1) (eq next-quadrant :q2)) 1)
