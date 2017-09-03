@@ -4,6 +4,7 @@
 
 (asdf:load-system :lisp-unit)
 (asdf:load-system :point-polygon)
+(asdf:load-system :jsown)
 
 (in-package :point-polygon)
 
@@ -17,6 +18,11 @@
   (:use :common-lisp :lisp-unit :point-polygon))
 
 (in-package :point-polygon-test)
+
+(defparameter *ireland-polygon-file-path*
+  (make-pathname :directory (pathname-directory *load-pathname*)
+                 :name "republic-of-ireland-seawater-boundaries-2017-09-03.geogson"
+                 :type nil))
 
 (define-test quadrant-test
   (let ((x '(34.134134D0 94.341819D0)))
@@ -107,6 +113,22 @@
      (assert-true (is-inside-or-border '(29.00D0 53.38D0) spiralid))
      (assert-true (is-inside-or-border '(29.00D0 52.58D0) spiralid))
      (assert-true (is-inside-or-border '(30.43D0 53.88D0) spiralid))))
+
+(defun file-get-contents (filename)
+  (with-open-file (stream filename)
+    (let ((contents (make-string (file-length stream))))
+      (read-sequence contents stream)
+      contents)))
+      
+(define-test is-inside-ireland-test
+  (let* ((json (jsown:parse (file-get-contents *ireland-polygon-file-path*)))
+         (ireland-polygon (mapcar (lambda (x) (list (coerce (car x) 'double-float) (coerce (cadr x) 'double-float)))
+                                  (car (jsown:val  (jsown:val (car (jsown:val json "features")) "geometry") "coordinates"))))
+         (dublin '(-6.2576209D0 53.3293802D0))
+         (belfast '(-6.0670604D0 54.5949977D0)))
+     (assert-true (is-inside-or-border dublin ireland-polygon))
+     (assert-false (is-inside-or-border belfast ireland-polygon))
+  ))
 
 (setq *print-failures* t)
 (setq *print-errors* t)
