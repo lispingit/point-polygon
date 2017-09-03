@@ -39,7 +39,7 @@
                       (t -2)))))))
 
 (defun abscissa-projection (p v1 v2)
-  "Return the abscissa projecion of point p into segment with vertex v1 and v2."
+  "Return the abscissa projection of point p into segment with vertex v1 and v2."
   (list (+ (car v1)
            (/ (* (- (car v2) (car v1))
                  (- (cadr p) (cadr v1)))
