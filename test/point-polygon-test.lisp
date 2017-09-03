@@ -93,7 +93,21 @@
      (assert-false (is-inside-or-border '(22.6D0 53.43D0) trapezoid))
      (assert-false (is-inside-or-border '(28.6D0 53.99D0) trapezoid))
      (assert-false (is-inside-or-border '(28.6D0 51.79D0) trapezoid))))  
-  
+
+(define-test is-inside-spiralid-test
+  (let ((spiralid '((29.71D0 52.96D0) (30.39D0 53.02D0) (30.33D0 53.26D0) (29.23D0 53.24D0) (29.03D0 52.70D0) (30.88D0 52.68D0)
+                    (31.02D0 53.40D0) (29.52D0 53.76D0) (31.33D0 54.11D0) (31.65D0 52.28D0) (28.68D0 52.58D0) (28.88D0 53.54D0)
+                    (30.73D0 53.33D0) (30.49D0 52.82D0) (29.71D0 52.96D0))))
+     (assert-false (is-inside-or-border '(29.90D0 53.02D0) spiralid))
+     (assert-false (is-inside-or-border '(30.90D0 53.02D0) spiralid))
+     (assert-false (is-inside-or-border '(30.90D0 52.02D0) spiralid))
+     (assert-false (is-inside-or-border '(31.40D0 54.02D0) spiralid))
+     (assert-true (is-inside-or-border '(30.40D0 52.88D0) spiralid))
+     (assert-true (is-inside-or-border '(31.33D0 54.11D0) spiralid))
+     (assert-true (is-inside-or-border '(29.00D0 53.38D0) spiralid))
+     (assert-true (is-inside-or-border '(29.00D0 52.58D0) spiralid))
+     (assert-true (is-inside-or-border '(30.43D0 53.88D0) spiralid))))
+
 (setq *print-failures* t)
 (setq *print-errors* t)
 (run-tests :all)
