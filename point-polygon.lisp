@@ -33,10 +33,11 @@
           ((and (eq last-quadrant :q3) (eq next-quadrant :q2)) -1)
           ((and (eq last-quadrant :q2) (eq next-quadrant :q1)) -1)
           ((and (eq last-quadrant :q1) (eq next-quadrant :q4)) -1)
-          (t (let ((proj (abscissa-projection p last-point next-point)))
-                (cond ((pair-eq p proj) nil)
-                      ((> (car proj) (car p)) 2)
-                      (t -2)))))))
+          (t (if (= (cadr last-point) (cadr next-point)) nil
+			     (let ((proj (abscissa-projection p last-point next-point)))
+                   (cond ((pair-eq p proj) nil)
+                         ((< (car proj) (car p)) 2)
+                         (t -2))))))))
 
 (defun abscissa-projection (p v1 v2)
   "Return the abscissa projection of point p into segment with vertex v1 and v2."
