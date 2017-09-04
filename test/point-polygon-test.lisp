@@ -1,6 +1,6 @@
-#!/usr/bin/sbcl --script
-(declaim (optimize (debug 3)))
-(require 'asdf)
+;#!/usr/bin/sbcl --script
+;(declaim (optimize (debug 3)))
+;(require 'asdf)
 
 (asdf:load-system :lisp-unit)
 (asdf:load-system :point-polygon)
