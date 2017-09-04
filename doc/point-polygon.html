@@ -1,0 +1,123 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="default.css">
+<meta charset="utf-8">
+<meta name="description" content="Author: Raffaele Arecchi, Software: Point inside polygon test for Common Lisp">
+<title>point-polygon 1.0: point inside polygon test for Common Lisp</title>
+<style type="text/css">pre { padding:10px; background-color:#e0ebeb;)</style>
+</head>
+
+<body lang="en">
+
+<h1>point-polygon 1.0: point inside polygon test for Common Lisp</h1>
+
+<p><b>point-polygon</b> is a Common Lisp library to test if a point lies inside or outside a polygon in 2 dimensions coordinates.</p>
+
+<p>Source code is released under a <a href="https://opensource.org/licenses/MIT">MIT License</a>
+and hosted at git repository <code>https://gitlab.com/janduja/point-polygon.git</code> under branch <code>1.0</code>.</p>
+<p>A compressed zip package can be downloaded at <a href="http://janduja.com/point-polygon/point-polygon-1.0-tar.gz">
+http://janduja.com/point-polygon/point-polygon-1.0-tar.gz</a>.</p>
+
+<p>Contents:
+<ol>
+<li><a href="#install">Installation</a></li>
+<li><a href="#use">Use</a></li>
+<li><a href="#internals">Internals</a></li>
+<li><a href="#testcomp">Tests and compatibility</a></li>
+</ol>
+</p>
+
+<h3><a id="install">Installation</a></h3>
+<p>The library has no dependencies and can be loaded directly or as an <a href="http://www.cliki.net/asdf">ASDF</a> package.
+First, get the source code or unpack the zip file.</p>
+<p>To load directly:
+<pre>(load "point-polygon.lisp")</pre>
+To load as an ASDF system, ensure that the library source is located in a directory looked by ASDF (ie. <code>~/common-lisp/point-polygon</code>),
+then in your code:
+<pre>(asdf:load-system :point-polygon)</pre>
+</p>
+
+<h3><a id="use">Use</a></h3>
+<p>[Function] <code><b>is-inside-or-border</b> point polygon => is-inside</code><br/>
+Tells if point is inside or in the border of polygon. point is expected to be a list of two values, the coodinate pair,
+while polygon is a list of coordinate pairs such that the first element is pairwise equal to the last element.
+A coordinate is expected to be a numeric float, but not necessarly.
+Returns T if the point lies inside the polygon, false otherwise.</p>
+
+<p>The following example shows how to test if a point lies inside or outside a trapezoid:
+<pre>(let ((trapezoid '((-23.24D0 11.87D0) (7.29D0 53.99D0) (29.48D0 32.14D0) (5.07D0 -50.99D0) (-23.24D0 11.87D0))))
+  (is-inside-or-border '(27.90D0 52.76D0) trapezoid))</pre>
+</p>
+
+
+<h3><a id="internals">Internals</a></h3>
+<p>The test is implemented by the winding number algorithm.<br>
+Using the point to test as reference, traversing the polygon from the first element to the last one we track the number of windings around the point:
+if the value is zero the point lies outside, otherwise it lies inside.</p>
+
+<p><img src="Winding_Number_Animation_Small.gif" style="width:200px;"><br>
+<i>Image: winding number tracking, source: Wikipedia. Author: Jim.belk. Released in the public domain.</i></p>
+
+<p>In the code implementation, the computation of the winding number is tracked by quadrant movements: setting the point to test as origin of a Cartesian plane,
+traversing the polygon from a point to the next can be identified by an integer quadrant movement:
+<ul>
+	<li>0 if the points lie in the same quadrant</li>
+	<li>+1 if the successor point lies in the next counterclockwise quadrant</li>
+	<li>-1 if the successor point lies in the next clockwise quadrant</li>
+</ul>
+If a point of the polygon is the same as the point to test, we then know that the point lies in the border and we are done.<br>
+In the case of a traversing from a quadrant to the opposite, we need to calculate the abscissa projection of the point to the segment
+of the polygon. Then:
+<ul>
+	<li>if the projection concides with the point to test, then the point is on the border of the polygon</li>
+	<li>otherwise, from the position of the abscissa projection relative to the point to test we are able to determine if the movement of
+	    the quadrant happened counterclockwise or clockwise, tracking +2 and -2 respectively</li>
+</ul>
+The total sum is (four times) the winding number.<br>
+The abscissa projection involves an algebraic computation, so the result becomes less accurate as the point to test is closer to the border.<br>
+In the code the four quadrants are identified by the following trigonometric ranges: [0,pi/2) [pi/2,pi) [pi,3pi/4) [3pi/4,2pi).
+</p>
+
+<h3><a id="testcomp">Tests and compatibility</a></h3>
+<p>Tests are collected in file <code>point-polygon-test.lisp</code> under the test directory and have dependencies on
+<a href="http://www.cliki.net/lisp-unit">lisp-unit</a> and <a href="http://www.cliki.net/jsown">jsown</a>.</p>
+<p>To run the tests you have to position as current directory in the <code>point-polygon/test</code>, then launch
+your Common Lisp implementation and load the file <code>point-polygon-test.lisp</code>. A Unit Test report is printed on the
+standard output telling the run tests, the passed and failed assertions and the execution errors.</p>
+<p>The tests run successfully with the following Common Lisp implementations and hardware configuration:
+<ul>
+<li>SBCL 1.2.4.debian</li>
+<li>GNU CLISP 2.49 (2010-07-07)</li>
+<li>ABCL 1.5.0</li>
+</ul>
+<code>
+<table border="1">
+<tr>
+<td>[uname]</td><td>Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux</td>
+</tr>
+<tr>
+<td>[lscpu]</td><td>CPU(s): 4</td>
+</tr>
+<tr>
+<td>[/proc/cpuinfo]</td><td>model name : Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz</td>
+</tr>
+<tr>
+<td>[/proc/cpuinfo]</td><td>cache size : 8192 KB</td>
+</tr>
+<tr>
+<td>[/proc/cpuinfo]</td><td>address sizes : 39 bits physical, 48 bits virtual</td>
+</tr>
+<tr>
+<td>[lscpu]</td><td>CPU MHz 3591.684</td>
+</tr>
+<tr>
+<td>[/proc/meminfo]</td><td>MemTotal: 11418128 kB</td>
+</tr>
+</table>
+</code>
+</p>
+
+<hr>
+Last edited on: 04 Sep 2017<br/>
+Author: Raffaele Arecchi<br/>
+Contact the author of this document via email to: <code>raffaele.arecchi {at} gmail {point} com</code>.
